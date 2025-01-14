@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sample-ds-1
+spec:
+  selector:
+    matchLabels:
+      name: ds-1
+  template:
+    metadata:
+      labels:
+        name: ds-1
+    spec:
+      affinity:
+       nodeAffinity:
+         requiredDuringSchedulingIgnoredDuringExecution:
+           nodeSelectorTerms:
+            - matchExpressions:
+              - key: karpenter.k8s.aws/instance-cpu
+                operator: Lt
+                values:
+                 - "31"
+      containers:
+      - name: nginx
+        image: nginx
+        resources:
+          requests:
+            cpu: 1
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sample-ds-2
+spec:
+  selector:
+    matchLabels:
+      name: ds-2
+  template:
+    metadata:
+      labels:
+        name: ds-2
+    spec:
+      affinity:
+       nodeAffinity:
+         requiredDuringSchedulingIgnoredDuringExecution:
+           nodeSelectorTerms:
+            - matchExpressions:
+              - key: karpenter.k8s.aws/instance-cpu
+                operator: Gt
+                values:
+                 - "30"
+      containers:
+      - name: nginx
+        image: nginx
+        resources:
+          requests:
+            cpu: 10
+
